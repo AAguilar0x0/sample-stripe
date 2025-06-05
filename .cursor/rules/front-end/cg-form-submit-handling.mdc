@@ -1,0 +1,29 @@
+---
+description: Form submit handling using react-hook-form and react-query mutation
+globs: src/features/**/*.tsx, *.mdc, *.md
+alwaysApply: false
+---
+
+
+### Reset Form Guide
+
+```tsx
+  const mutation = useMutation() //dynamic variable name, context: useMutation from react-query
+  const {
+    reset,
+    getValues,
+  } = form
+  useEffect(() => {
+    if (mutation.isError) {
+      reset(getValues(), {
+        keepDirty: true,
+      })
+    } else if (mutation.isSuccess) {
+       reset(getValues(), {
+        keepIsSubmitSuccessful: true,
+      })
+    }
+  }, [reset, mutation.isError, mutation.isSuccess, getValues])
+
+```
+

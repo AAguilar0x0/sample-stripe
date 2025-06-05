@@ -1,0 +1,144 @@
+---
+description: Implementating feature assuming trpc API is available
+globs: src/features/**/*.ts, src/features/**/*.tsx, *.md, *.mdc
+alwaysApply: false
+---
+# Feature Implementation Guide
+
+## Directory Structure
+
+src/features/<feature-name>/
+├── components/
+│ └── <feature>.tsx # Main component with loading states
+└── schemas.ts # Types and Zod schemas
+
+## Implementation Steps
+
+### 1. Types and Schemas (`schemas.ts`)
+```typescript
+import { z } from 'zod'
+import type { FeatureOutput, FeatureInput } from '@/lib/core/dtos/feature'
+
+export const featureFormSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().optional(),
+})
+
+export type FeatureFormHandler = z.infer<typeof featureFormSchema>
+```
+
+### 2. Feature Component with Loading State (`components/feature.tsx`)
+```typescript
+'use client'
+
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { trpc } from '@/lib/trpc/client'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import type { FeatureFormHandler } from '../schemas'
+import { featureFormSchema } from '../schemas'
+
+export function FeatureSkeleton() {
+  return (
+    <div className="space-y-3 rounded-lg border border-border bg-background p-5">
+      <Skeleton className="h-8 w-[200px]" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-[200px] rounded-lg" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function Feature() {
+  const featureQuery = trpc.feature.data.useQuery()
+  const featureMut = trpc.feature.data.useMutation()
+  
+  const form = useForm<FeatureFormHandler>({
+    resolver: zodResolver(featureFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      title: '',
+      description: '',
+    }
+  })
+
+  const { toast } = useToast()
+
+  const {
+    reset,
+    getValues,
+    formState: { isDirty, isValid, isSubmitting, isSubmitSuccessful },
+  } = form
+
+  const isSubmitBtnDisabled = isSubmitting || !isDirty || !isValid || isSubmitSuccessful
+  const isSubmitBtnLoading = isSubmitting
+
+  useEffect(() => {
+    if (featureMut.isError) {
+      reset(getValues(), { keepDirty: true })
+    } else if (featureMut.isSuccess) {
+      reset(getValues(), { keepIsSubmitSuccessful: true })
+    }
+  }, [reset, featureMut.isError, featureMut.isSuccess, getValues])
+
+  const onSubmit = async (data: FeatureFormHandler) => {
+    try{
+     await featureMut.mutateAsync(data)
+     toast({
+      description: 'Success'
+     })
+    }catch(e){
+      toast({
+        description: 'Error'
+      })
+    }
+  }
+
+  if (featureQuery.isPending) {
+    return <FeatureSkeleton />
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Button 
+          type="submit" 
+          disabled={isSubmitBtnDisabled}
+          isLoading={isSubmitBtnLoading}
+        >
+          Create Feature
+        </Button>
+      </form>
+    </Form>
+  )
+}
+```
+
+

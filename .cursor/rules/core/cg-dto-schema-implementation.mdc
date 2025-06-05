@@ -1,0 +1,42 @@
+---
+description: DTO and zod schema implementation for entity
+globs: src/lib/**/*.ts, *.md, *.mdc
+alwaysApply: false
+---
+
+## File name convention
+`src/lib/core/dtos/*-dtos.ts`
+or
+`health-check-dtos.ts`
+
+
+## Implementation
+```ts
+import { z } from 'zod'
+
+export const healthCheckSchema = z.object({
+  status: z.string(),
+})
+
+export type HealthCheck = z.infer<typeof healthCheckSchema>
+
+export const healthCheckDTOSchema = z.object({
+  message: z.string(),
+})
+
+export type HealthCheckDTO = z.infer<typeof healthCheckDTOSchema>
+
+export const healthCheckDTOResSchema = z.object({
+  message: z.string(),
+})
+
+export type HealthCheckDTORes = z.infer<typeof healthCheckDTOResSchema>
+```
+
+### Rules
+
+- zod schema should be post-fix with `Schema`
+- type should have no `Schema` post-fix
+- Data transfer object (DTO) zod schema should be post-fix with `DTOSchema`
+- DTO response schema and type should post-fix the corresponding `DTOResSchema` and `DTORes`
+

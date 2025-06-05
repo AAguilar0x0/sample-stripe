@@ -1,0 +1,42 @@
+---
+description: Drizzle DTO implementation
+globs: src/lib/**/*.ts, *.mdc, *md
+alwaysApply: false
+---
+```ts
+import { Database } from '@/lib/extern/db/supabase/database.types'
+import { z } from 'zod'
+
+export type Profile = Database['public']['Tables']['profiles']['Row']
+export type InsertProfile = Database['public']['Tables']['profiles']['Insert']
+export type UpdateProfile = Database['public']['Tables']['profiles']['Update']
+
+
+export const profileSchema = z.object({
+  // ...
+}) satisfies z.ZodType<Profile>
+
+export const insertProfileSchema = z.object({
+  // ...
+}) satisfies z.ZodType<InsertProfile>
+
+export const updateProfileSchema = z.object({
+  // ...
+}) satisfies z.ZodType<UpdateProfile>
+
+
+export const getProfileDTOSchema = z.object({
+  resource_id: z.string()
+})
+
+export type GetProfileDTOSchema = z.infer<typeof getProfileDTOSchema>
+
+```
+### Common DTO 
+- entity
+- insertEntity
+- updateEntity
+
+### Rules
+- Entity related schemas should NEVER have a `DTO` in its name convention
+- Schemas that will be used as interface for APIs should be post-fix with `DTOSchema` or `DTO` for type

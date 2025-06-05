@@ -1,0 +1,37 @@
+---
+description: Diagram of data flow from API to client consumption
+globs: src/lib/**/*.ts
+alwaysApply: false
+---
+```
+sequenceDiagram
+    participant Client as React Client Component
+    participant Hook as Custom tRPC Hook
+    participant Router as tRPC Router
+    participant Controller as Controller
+    participant Service as Service/Repository
+    participant DB as Database
+
+    Client->>Hook: Call useQuery/useMutation
+    Note over Hook: trpc.feature.operation.useQuery()
+
+    Hook->>Router: Make tRPC Request
+    Note over Router: Input validation with Zod
+
+    Router->>Controller: Forward validated input
+    Note over Controller: Business logic processing
+
+    Controller->>Service: Call repository methods
+    Note over Service: Database operations
+
+    Service->>DB: Execute query
+    DB-->>Service: Return data
+
+    Service-->>Controller: Transform to DTO
+    Controller-->>Router: Return processed result
+    Router-->>Hook: Return type-safe response
+    Note over Hook: React Query caching
+
+    Hook-->>Client: Update UI with data
+    Note over Client: Render with loading/error states
+```

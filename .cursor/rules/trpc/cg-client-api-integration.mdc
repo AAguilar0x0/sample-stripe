@@ -1,0 +1,13 @@
+---
+description: Integrating trpc client or data query for react client components
+globs: src/features/**/*.tsx, *.mdc, *.md
+alwaysApply: false
+---
+When accessing API ensure to import 
+
+`import { trpc } from '@/lib/trpc/client'`
+[client.ts](mdc:src/lib/trpc/client.ts)
+
+This should give us access to TRPC routers [index.ts](mdc:src/lib/adapters/trpc/routers/index.ts)
+
+for example `trpc.auth.getCurrentUser({})` returns the supabase user data.

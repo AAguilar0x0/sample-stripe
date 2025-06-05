@@ -1,0 +1,31 @@
+---
+description: Creating react pure component with wrapper component
+globs: *.tsx
+alwaysApply: false
+---
+```tsx
+“Please refactor the following component to make it a pure functional component. The wrapper component should accept a data prop of a specific entity. Ensure that the pure component only receives generic props and does not rely on any specific entity or type. Do not use React.FC for typing. Export the wrapper component by default, and do not append a Pure prefix to the component name or its prop type. The wrapper component should have a suffix of Wrapper.”
+
+
+type PureComponentProps = {
+    // fields
+};
+
+const PureComponent = ({ ...props }: PureComponentProps) => {
+  return (
+    <div>
+      {/* Render component content using props */}
+    </div>
+  );
+};
+
+type WrapperProps = {
+  data: Entity;
+};
+
+const Wrapper = ({ data }: WrapperProps) => {
+  return <Component {...data} />;
+};
+
+export default Wrapper
+```

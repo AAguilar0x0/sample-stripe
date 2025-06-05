@@ -1,0 +1,87 @@
+---
+description: API implementation guide using trpc
+globs: src/lib/**/*.ts
+alwaysApply: false
+---
+This is an instruction for creating trpc files and API endpoints.
+
+---
+Below is the detailed step-by-step pseudo-code for creating trpc router files
+
+1. Update or Create a <Feature> Repository file.
+`src/lib/extern/db/supabase/<feature-repo>.ts`
+
+```ts
+import { DTO, Entity } from '@/lib/core/dtos/<feature>'
+
+export class Repo {
+ 
+  constructor() {
+
+  }
+}
+```
+
+example: [auth-repo.ts](mdc:src/lib/extern/db/supabase/auth-repo.ts)
+
+2. Update `MyServiceProvider` to add the new service feature field, this is class is providing the services for data injection.
+
+[index.ts](mdc:src/lib/extern/index.ts)
+
+3. Create the corresponding Controller file and use the created Feature repository.
+
+```ts
+import { FeatureRepo } from '@/lib/extern/db/supabase/<feature>'
+export class Controller {
+  private repo: Repo
+  constructor(private repo: Repo) {}
+}
+```
+
+example: [auth.ts](mdc:src/lib/core/controllers/auth.ts)
+
+4. Update the MyControllerFactory to add the new Controller and inject the necessary services based on its constructor
+
+[index.ts](mdc:src/lib/core/controllers/index.ts)
+
+```ts
+export class MyControllerFactory {
+  services: MyServiceProvider
+  constructor(services: MyServiceProvider) {
+    this.services = services
+  }
+
+    Feat(){
+        return new FeatController(this.services.FeatRepo())
+    }
+}
+```
+
+
+5. Update the trpc register controller to include the newly created Feature controller.
+
+[init.ts](mdc:src/lib/trpc/init.ts)
+
+
+6. Create a new trpc router, based on the example: [auth.ts](mdc:src/lib/adapters/trpc/routers/auth.ts)
+
+7. Update the trpc router to include the new router.
+
+[index.ts](mdc:src/lib/adapters/trpc/routers/index.ts)
+
+---
+The files must be created in the same directory as the example file and should follow a similar structure. Ensure that any necessary dependencies are imported, just as in the example file.
+
+### rules
+
+Enforce a unidirectional flow of dependencies: outer layers must not depend on inner layers. For example, the repository layer must not be aware of the controller layer, but controllers can depend on repositories. 
+
+
+
+
+
+
+
+
+
+

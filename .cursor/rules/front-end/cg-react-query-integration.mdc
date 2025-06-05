@@ -1,0 +1,25 @@
+---
+description: React Query integration and rules
+globs: *.tsx, *.mdc, *.md
+alwaysApply: false
+---
+### convention
+For data fetching trpc query hook it should be:
+`<feat>Query` or `userQuery`
+
+- starts with the feature or entity name and ends with `Query`
+
+For data mutation trpc query hook it should be:
+`<feat>Mut` or `loginMut`
+
+- starts with the feature or entity name and ends with `Mut`
+
+---
+
+if multiple trpc hooks is placed in one wrapper hook, it should be prefixed with `useMod`,example `useModUserSettings`
+
+### rules
+
+- Prefer `query.isPending` rather than `query.isLoading` when handling react-query for better type-guard support
+- Prefer `mutation.mutateAsync` rather than `mutation.mutate`, handle the `mutateAsync` call with try-catch
+- Do not export react-query hooks by destructuring its field, it should be the whole object 

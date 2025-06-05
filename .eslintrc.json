@@ -1,0 +1,30 @@
+{
+  "extends": [
+    "plugin:import/recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "next/core-web-vitals",
+    "next/typescript",
+    "prettier"
+  ],
+  "plugins": ["import"],
+  "rules": {
+    "import/no-named-as-default": 0,
+    "import/no-named-as-default-member": 0,
+    "import/order": "error",
+    "react/no-unescaped-entities": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  }
+}

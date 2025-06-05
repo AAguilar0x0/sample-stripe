@@ -1,0 +1,18 @@
+---
+description: Form button state handling using react-hook-form
+globs: src/features/**/*.tsx, *.mdc, *.md
+alwaysApply: false
+---
+### Form Button Disabled
+
+```tsx
+  const form = useFormContext<T>()
+
+  const {
+    formState: { isDirty, isValid, isSubmitSuccessful, isSubmitting },
+  } = form
+
+  const isSubmitBtnDisabled = isSubmitting || !isDirty || !isValid || isSubmitSuccessful
+
+  const isSubmitBtnLoading = isSubmitting
+```

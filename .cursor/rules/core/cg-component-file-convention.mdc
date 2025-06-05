@@ -1,0 +1,8 @@
+---
+description: Component file convention
+globs: *.tsx, *.md, *.mdc
+alwaysApply: false
+---
+Component file naming convention:
+`<feature>-*.tsx`
+example: `auth-login-form.tsx`

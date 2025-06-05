@@ -1,0 +1,39 @@
+---
+description: Integrating feedback toast for success or error handling
+globs: src/features/**/*.tsx, *.mdc, *.md
+alwaysApply: false
+---
+[hooks.ts](mdc:src/common/hooks.ts)
+
+Available Hooks
+useSuccessToast(): Displays success messages.
+useErrorToast(): Displays error messages.
+useCatchErrorToast(): Handles try-catch with automatic optional success toast.
+
+import { useErrorToast, useSuccessToast, useCatchErrorToast } from '@/common/hooks'
+
+const errorToast = useErrorToast()
+const successToast = useSuccessToast()
+const catchError = useCatchErrorToast()
+
+errorToast({
+  error,
+  description: 'Custom error message'
+})
+
+successToast({
+  description: 'Operation successful',
+  duration: 3000,
+  variant: 'default'
+})
+
+await catchError(
+  async () => {
+    await someAsyncFunction()
+  },
+  {
+    description: 'Operation completed successfully',
+    variant: 'default',
+    duration: 3000
+  }
+)

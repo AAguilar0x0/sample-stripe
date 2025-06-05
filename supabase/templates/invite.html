@@ -1,0 +1,30 @@
+<h2>Complete your signup</h2>
+
+<p>Follow this link to complete your user:</p>
+<p>
+  <a href="{{ or .RedirectTo .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite"
+    >Confirm your mail</a
+  >
+</p>
+<p>Or you can use the login verification code directly:</p>
+<p>
+  <strong
+    style="
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 6px;
+      line-height: 1em;
+      font-size: 1.2em;
+      border-radius: 4px;
+      letter-spacing: 1.4px;
+      background-position: initial;
+      background-size: initial;
+      background-repeat: initial;
+      background-attachment: initial;
+      background-origin: initial;
+      background-clip: initial;
+      background-color: rgba(223, 225, 228, 1);
+    "
+    ><code>{{ .Token }}</code></strong
+  >
+</p>

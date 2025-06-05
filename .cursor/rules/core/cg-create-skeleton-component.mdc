@@ -1,0 +1,31 @@
+---
+description: Creating skeleton or loading UI state component
+globs: *.tsx, *.mdc, *.md
+alwaysApply: false
+---
+Create corresponding loading state out of a reference component using shadcn `Skeleton` found in `@/components/ui/skeleton`
+
+
+Example:
+```ts
+export default function FeatureList(props: Props) {
+  return (
+    <div className='rounded-lg border border-border bg-background p-5'>
+      {props.data.map(d => (
+        <div key={d.business_data_id}>{d.data_name}</div>
+      ))}
+    </div>
+  )
+}
+
+export function FeatureListSkeleton() {
+  const count = 3
+  return (
+    <div className='space-y-3 rounded-lg border border-border bg-background p-5'>
+      {Array.from({ length: count }).map((_, index) => (
+        <Skeleton key={index} className='h-6 w-full' />
+      ))}
+    </div>
+  )
+}
+```

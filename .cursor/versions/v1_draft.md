@@ -1,0 +1,284 @@
+User flows:
+- Authentication
+    - Register using work email
+        - User enters work email
+        - User is sent a magic link for authentication
+        - User clicks the magic link and is redirected to `Onboarding Page`
+    - Login using work email and their domain is not yet setup
+        - User is sent a magic link for authentication
+        - User clicks the magic link and is redirected to `Onboarding Page`
+- Onboarding
+    - Step 1
+        - System scrapes the `domain` to retrieve their business information
+        - System retrieves the following information
+            - business_data type:features
+                - It has the following fields
+                    - title
+                    - description
+        - UI then shows the business data list
+        - User clicking `Next` would save those business data associated to their business
+    - Step 2
+        - System then generates 10 `business problems` using the `business information` and `business_data` it retrieved
+        - UI then shows the 10 `business problems` and pre-selects 3 `business problems`
+            - User is allowed to custom select maximum of 3 `business problems`
+        - User clicking `Next` would redirect them to the `Chat (Admin Interface)`
+            - Background:
+                - System saves the generated business problems into the database as following:
+                    - Problems
+                        - An independent entity that stores problems only
+                    - Business Problems
+                        - A dependent entity that is associates the business and the problem
+                        - The `business problems` that were selected would have the field `tracked` set to true
+- Chat (Admin Interface)
+    - Flow
+        - Regular Flow
+            - UI shows a CTA that states `Create Campaign`, that would create a new chat thread 
+        - From Onboarding
+            - UI should show `Build a Campaign` action button
+                - User clicking `Build a Campaign` button should automatically send a message in the chat, that initiates the Chat agent
+                - Chat agent should process the `Build a campaign` request and should display the Agent Campaign Form
+    - Agent Campaign Form
+        - Should display the following sections
+            - Campaign Problem
+                - Displays the Problem that the campaign would use to create the generated campaign pages
+                - By default will use pre-existing business problems, but can be customizable depending if the user wants to create a custom campaign and specified their request 
+            - Campaign Details
+                - Title, the campaign title
+                - Target Customer
+                    - The target customer that the campaign would use to create the generated campaign pages
+                    - By default will use pre-existing `business_data` `type:target_customer` records, but can be customizable depending if the user wants to create a custom campaign and specified their request
+                - Additional Instructions (Optional)
+                    - Instructions, that can be optionally added as payload when generating campaign pages
+            - Campaign Output
+                - Start Date
+                    - When the Campaign would start
+                        - Date and Time, default to next day 12:00 midnight
+                - End Date
+                    - When the Campaign would end
+                        - Date, default to the next following day of the Start date
+                    - NOTE: "The campaign end date must be within 3 months of the start date"
+                - Frequency
+                    - How frequent the generation of pages, either `Daily` or `Weekly`
+        - User have the following form handling options
+            - Save Campaign
+                - This creates a new record in the database for the following:
+                    - Campaign
+                    - Business Data (if custom)
+                    - Business Problem (if custom)
+                - Pre-Generates the campaign pages according to `Campaign Pages Calculation`
+                    - state is set to `scheduled`
+                    - type is `solution`
+                - Redirects the user to the `Content Calendar (Admin Interface)` 
+            - Reject
+                - Closes the Agent Campaign Form, and sends an instruction to the chat that the user does not wish to proceed creating the campaign
+
+
+- Content Calendar (Admin Interface)
+    - UI should display the following 
+        - `Add` button in the admin interface header
+            - Redirects the user to a Campaign creation flow (Step 1)
+                - User should select a single business problem
+                - User can proceed by either
+                    - Cancel
+                        - Navigates the user to the Initial Screen for Content Calendar
+                    - Next
+                        - Redirects the user to Campaign Details Step (Step 2)
+            - Campaign Details Step (Step 2)
+                - The following should be displayed
+                    - Campaign Problem
+                        - the Problem that the campaign would use to create the generated campaign pages
+
+                     - Campaign Details
+                        - Title, the campaign title
+                        - Target Customer
+                            - The target customer that the campaign would use to create the generated campaign pages
+                        - Additional Instructions (Optional)
+                            - Instructions, that can be optionally added as payload when generating campaign pages
+                     - Campaign Output
+                        - Start Date
+                            - When the Campaign would start
+                                - Date and Time, default to next day 12:00 midnight
+                        - End Date
+                            - When the Campaign would end
+                                - Date, default to the next following day of the Start date
+                            - NOTE: "The campaign end date must be within 3 months of the start date"
+                        - Frequency
+                            - How frequent the generation of pages, either `Daily` or `Weekly`
+            - User should be able to do the following after completing this step
+                - Back
+                    - Navigate back to the previous problem selection step
+                - Create
+                    - Create the Campaign record
+                        - redirected back to the Content Calendar initial screen 
+        - List of created campaigns
+            - The user should be able to do the following for each campaign list item
+                - Edit
+                    - Redirects the user to the campaign edit screen
+                - Delete
+                    - Permanently delete the campaign
+                - View Campaign Pages
+                    - Redirects the user to a screen that shows the campaign pages
+
+
+
+- Vectle Profile (Admin Interface)
+    - This data is created after the user has successfully gone through onboarding process
+    - This should display the following form fields
+        - Business Name
+        - Business Description
+        - Profile handle
+            - a unique handle that would be used as a slug for accessing the profile publicly
+        - Call to Action Text
+            - the text that is displayed in the call to action button of the public profile page
+        - Call to Action Link
+            - the link to where the user is redirected when user clicks the call to action button
+        - Brand color
+            - Color that is used to customize the public profile page, for example the call to action button color
+        - Business Logo
+            - The logo that is shown in the public profile page header
+    - User should be able to update these values by editing and clicking the `Save` button in the admin interface header
+- Business Data (Admin Interface)
+    - UI should display the following
+        - list of business data item
+            - business data item 
+                - Displays the information about that business data
+                - User can click the edit icon, to edit the business data
+                    - This should update the business data item UI to edit form state
+                        - User can then do the following
+                            - Save
+                            - Delete
+                            - Cancel 
+        - Add button in the admin interface header
+            - This prepends a temporarly list item to the list that is on edit form state
+                - User can then do the following
+                    - Save
+                    - Delete
+                    - Cancel 
+        - Filter list dropdown
+            - All
+            - Feature
+            - Solution
+            - Product
+            - Service
+            - Target Customer
+- Catalog Pages (Admin Interface)
+    - UI should display the following:
+        - List of Page items
+            - Sorted by latest
+            - Page List Item
+                - Display the page information
+                - Can be selected
+                    - In selection state:
+                        - The Page Content Preview UI is updated to display the page information
+                    - Displays the following buttons
+                        - Edit
+                            - Redirects the user to Page Edit Screen
+                            - Throws an error when attempting to edit a page that is scheduled state
+                        - External link
+        - Add button in admin interface header
+            - Redirects the user to the page creation flow
+                - Problem Selection Step (Step 1)
+                    - Search/Create Problem UI
+                        - User can filter the page list by query
+                            - if the list returns empty, user can create the problem and the system would generate an appropriate business problem
+                                - the generated problem is then auto selected
+                    - A list of problems is displayed
+                    - User must select one problem
+                        - User can then click `Create` or `Cancel` in admin interface header
+                            - By clicking `Create`, user is redirected to a screen that displays a generating state
+                            - After successful generation, user is redirected to the Catalog Page initial screen 
+
+- Page Content Preview
+    - Previews the public page content
+    - Can be either:
+        - Profile Page
+            - Default 
+        - Catalog Page
+            - Is previewed, when user actively selects a catalog page in Catalog Pages (Admin Interface)
+
+
+- Profile (Public Page Content)
+    - This should be accessible through `vectle.com/@handle`
+    - Displays the following information:
+        - About Section
+            - Profile Description
+        - Key Features Section
+            - List of `business_data` items 
+        - Pages Section
+            - Visible when profile has pages that are marked as `published`
+            
+- Catalog Page (Public Page Content)
+    - This should be accessible through `vectle.com/@handle/catalog/<slug>`
+    - Slug
+        - Automatically updates when there is a change in page title
+    - Displays the following information:
+        - Title
+        - Description
+        - Updated date
+        - Content
+        - Profile Section
+            - Profile Information
+            - Learn More link
+                - Redirects the user to the public profile page
+        - Key Features Section
+            - list of `business_data` items that are associated with the catalog page
+            - See all features link
+                - Redirects the user to the public profile page
+
+- Footer (Admin Interface)
+    - Displays the following 
+        - Profile Information
+        - Upgrade Subscription redirect button
+            - Redirects the user to Subscription (Admin Interface)
+                - Shows the following UI
+                    - List of Subscription Plans
+                        - Subscription Plan Item
+                            - Displays the Plan information
+                            - User can click `Select Plan`
+                                - User is redirected to a stripe checkout session
+                            - If the plan is active, it would have a different UI state
+                    - Subscription Plan tabs
+                        - Annual
+                        - Monthly
+                        - This filters the list of subscription plan items
+        - Account redirect button
+            - Redirects the user to Account (Admin Interface)
+                - Shows the following UI
+                    - Email
+                        - If user is subscribed:
+                            - Shows a `Manage Subscription` button
+                            - Redirects the user to a stripe portal for subscription handling
+                        - else: Upgrade
+                            - Redirects the user to Subscription (Admin Interface)
+        - Logout
+
+
+- Subscription 
+    - Types
+        - Free
+        - Business
+        - Growth
+    - Constraints
+        - Free Tier
+            - Maximum page `3`
+        - Business Tier
+            - Maximum page `500`
+        - Growth Tier
+            - Maximum Page `5000`
+
+        - User can only create/add Catalog Pages up to their maximum page tier limit
+        - User can only create campaigns that generates pages not exceeding their maximum page tier limit 
+                    
+
+
+High Impact Features
+- Onboarding
+- Campaign Chat Agent
+- Camapaign Page generation
+- Subscription
+- Catalog Page Creation
+- View Public Page Content
+    - Profile Page
+    - Catalog Page
+- Vectle Profile Mutation
+- Business Data Mutation

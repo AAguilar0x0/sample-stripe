@@ -1,0 +1,44 @@
+---
+description: Form setup using react-hook-form and zod schema
+globs: src/features/**/*.tsx, *.mdc, *.md
+alwaysApply: false
+---
+Schema file is located in `@/features/<feature>/schemas.ts`
+
+Create a zod schema for the form in the schema file.
+
+variable naming convention: `<name>FormSchema`
+e.g `loginFormSchema`
+
+type naming convention: `<name>FormHandler`
+e.g `LoginFormHandler`
+
+
+create a Form provider component using `Form` from `@/components/ui/form` and `useForm` from `react-hook-form`
+
+
+example:
+```tsx
+const FormProvider = (props: PropsWithChildren<{ className?: string }>) => {
+    const form = useForm<FormHandler>({
+        resolver: zodResolver(formSchema),
+        defaultValues: formUtils.getDefaults(formSchema),
+    })
+
+    const onSubmitSuccess = (data: FormHandler) => {
+        console.log(data)
+    }
+
+    const onSubmitError = (errors: FieldErrors<FormHandler>) => {
+        console.log(errors)
+    }
+
+    return (
+        <Form {...form}>
+            <form className={cn('space-y-5', props.className)} onSubmit={form.handleSubmit(onSubmitSuccess, onSubmitError)}>
+                {props.children}
+            </form>
+        </Form>
+    )
+}
+```
